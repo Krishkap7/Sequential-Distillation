@@ -1,0 +1,143 @@
+import os
+import argparse
+
+from distil_logits_sequential import build_config as build_logits_config, run_logit_distillation
+from distil_hidden_sequential import build_config as build_hidden_config, run_hidden_distillation
+
+
+DEFAULT_TEACHER = "arcee-ai/Arcee-Spark"
+DEFAULT_STUDENT_A = "Qwen/Qwen3-1.5B"
+DEFAULT_STUDENT_B = "Qwen/Qwen3-0.5B"
+
+
+def sequential_logits_chain(
+    base_output_dir: str,
+    teacher: str = DEFAULT_TEACHER,
+    student_a: str = DEFAULT_STUDENT_A,
+    student_b: str = DEFAULT_STUDENT_B,
+):
+    """
+    Run the sequential logit-based chain:
+    Arcee-Spark → Qwen3-1.5B → Qwen3-0.5B
+    """
+    os.makedirs(base_output_dir, exist_ok=True)
+
+    step1_dir = os.path.join(base_output_dir, "qwen3-1_5b_from_arcee_logits")
+    step2_dir = os.path.join(base_output_dir, "qwen3-0_5b_from_qwen3-1_5b_logits")
+
+    # Step 1: teacher → student A
+    cfg1 = build_logits_config(
+        teacher=teacher,
+        student=student_a,
+        output_dir=step1_dir,
+    )
+    run_logit_distillation(cfg1)
+
+    # Step 2: student A checkpoint as new teacher → student B
+    cfg2 = build_logits_config(
+        teacher=step1_dir,
+        student=student_b,
+        output_dir=step2_dir,
+    )
+    run_logit_distillation(cfg2)
+
+
+def sequential_hidden_chain(
+    base_output_dir: str,
+    teacher: str = DEFAULT_TEACHER,
+    student_a: str = DEFAULT_STUDENT_A,
+    student_b: str = DEFAULT_STUDENT_B,
+):
+    """
+    Run the sequential hidden-state-based chain:
+    Arcee-Spark → Qwen3-1.5B → Qwen3-0.5B
+    """
+    os.makedirs(base_output_dir, exist_ok=True)
+
+    step1_dir = os.path.join(base_output_dir, "qwen3-1_5b_from_arcee_hidden")
+    step2_dir = os.path.join(base_output_dir, "qwen3-0_5b_from_qwen3-1_5b_hidden")
+
+    # Step 1: teacher → student A
+    cfg1 = build_hidden_config(
+        teacher=teacher,
+        student=student_a,
+        output_dir=step1_dir,
+    )
+    run_hidden_distillation(cfg1)
+
+    # Step 2: student A checkpoint as new teacher → student B
+    cfg2 = build_hidden_config(
+        teacher=step1_dir,
+        student=student_b,
+        output_dir=step2_dir,
+    )
+    run_hidden_distillation(cfg2)
+
+
+def parse_args() -> argparse.Namespace:
+    parser = argparse.ArgumentParser(
+        description=(
+            "Convenience runner for sequential Arcee-Spark → Qwen3-1.5B → Qwen3-0.5B "
+            "distillation chains (logits and hidden-states)."
+        )
+    )
+
+    parser.add_argument(
+        "--mode",
+        type=str,
+        choices=["logits", "hidden", "both"],
+        default="both",
+        help="Which sequential chain to run.",
+    )
+    parser.add_argument(
+        "--base-output-dir",
+        type=str,
+        default="./sequential_checkpoints",
+        help="Base directory under which step checkpoints will be stored.",
+    )
+    parser.add_argument(
+        "--teacher",
+        type=str,
+        default=DEFAULT_TEACHER,
+        help=f"Teacher model ID (default: {DEFAULT_TEACHER}).",
+    )
+    parser.add_argument(
+        "--student-a",
+        type=str,
+        default=DEFAULT_STUDENT_A,
+        help=f"First student model ID (default: {DEFAULT_STUDENT_A}).",
+    )
+    parser.add_argument(
+        "--student-b",
+        type=str,
+        default=DEFAULT_STUDENT_B,
+        help=f"Second student model ID (default: {DEFAULT_STUDENT_B}).",
+    )
+
+    return parser.parse_args()
+
+
+def main():
+    args = parse_args()
+
+    if args.mode in ("logits", "both"):
+        sequential_logits_chain(
+            base_output_dir=os.path.join(args.base_output_dir, "logits"),
+            teacher=args.teacher,
+            student_a=args.student_a,
+            student_b=args.student_b,
+        )
+
+    if args.mode in ("hidden", "both"):
+        sequential_hidden_chain(
+            base_output_dir=os.path.join(args.base_output_dir, "hidden"),
+            teacher=args.teacher,
+            student_a=args.student_a,
+            student_b=args.student_b,
+        )
+
+
+if __name__ == "__main__":
+    main()
+
+
