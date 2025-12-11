@@ -120,9 +120,9 @@ You can replace `distil_logits.py` with whichever script you want to use.
 This repo now includes convenient scripts to compare **sequential** and **parallel** distillation from `arcee-ai/Arcee-Spark` into Qwen3 students.
 
 - **Sequential (teacher cascades through students)**:
-  - `Arcee-Spark → Qwen/Qwen3-1.5B → Qwen/Qwen3-0.5B`
+  - `Arcee-Spark → Qwen/Qwen3-1.7B → Qwen/Qwen3-0.6B`
 - **Parallel (teacher distills directly into all students)**:
-  - `Arcee-Spark → {Qwen/Qwen3-1.5B, Qwen/Qwen3-0.5B}`
+  - `Arcee-Spark → {Qwen/Qwen3-1.7B, Qwen/Qwen3-0.6B}`
 
 #### Single-step distillation (building blocks)
 
@@ -131,42 +131,17 @@ Logit-based KD (same-architecture-friendly):
 ```bash
 accelerate launch distil_logits_sequential.py \
   --teacher arcee-ai/Arcee-Spark \
-  --student Qwen/Qwen3-1.5B \
-  --output-dir ./checkpoints/qwen3-1_5b_from_arcee
+  --student Qwen/Qwen3-1.7B \
+  --output-dir ./checkpoints/qwen3-1_7b_from_arcee
 ```
 
-Hidden-state KD (cross-architecture-friendly):
+#### Sequential chain (Arcee-Spark → Qwen3-1.7B → Qwen3-0.6B)
 
-```bash
-accelerate launch distil_hidden_sequential.py \
-  --teacher arcee-ai/Arcee-Spark \
-  --student Qwen/Qwen3-1.5B \
-  --output-dir ./checkpoints/qwen3-1_5b_from_arcee_hidden
-```
-
-#### Sequential chains (Arcee-Spark → Qwen3-1.5B → Qwen3-0.5B)
-
-Run both logits and hidden-state chains with one command:
-
-```bash
-accelerate launch run_sequential_chain.py \
-  --mode both \
-  --base-output-dir ./sequential_checkpoints
-```
-
-Or only logits:
+Run the logits-based sequential chain with one command:
 
 ```bash
 accelerate launch run_sequential_chain.py \
   --mode logits \
-  --base-output-dir ./sequential_checkpoints
-```
-
-Or only hidden states:
-
-```bash
-accelerate launch run_sequential_chain.py \
-  --mode hidden \
   --base-output-dir ./sequential_checkpoints
 ```
 
@@ -177,17 +152,8 @@ Logit-based parallel distillation:
 ```bash
 accelerate launch parallel_distil_logits.py \
   --teacher arcee-ai/Arcee-Spark \
-  --students Qwen/Qwen3-1.5B Qwen/Qwen3-0.5B \
+  --students Qwen/Qwen3-1.7B Qwen/Qwen3-0.6B \
   --base-output-dir ./parallel_checkpoints/logits
-```
-
-Hidden-state parallel distillation:
-
-```bash
-accelerate launch parallel_distil_hidden.py \
-  --teacher arcee-ai/Arcee-Spark \
-  --students Qwen/Qwen3-1.5B Qwen/Qwen3-0.5B \
-  --base-output-dir ./parallel_checkpoints/hidden
 ```
 
 For a fair comparison between **sequential** and **parallel** setups, keep the dataset, sequence length, and core training hyperparameters the same across runs.
