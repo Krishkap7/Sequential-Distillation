@@ -1,5 +1,6 @@
 import os
 import argparse
+from typing import Optional
 
 from distil_logits_sequential import (
     build_config as build_logits_config,
@@ -20,6 +21,8 @@ def sequential_logits_chain(
     teacher: str = DEFAULT_TEACHER,
     student_a: str = DEFAULT_STUDENT_A,
     student_b: str = DEFAULT_STUDENT_B,
+    num_samples: Optional[int] = None,
+    max_length: int = 4096,
 ):
     """
     Run the sequential logit-based chain:
@@ -35,6 +38,8 @@ def sequential_logits_chain(
         teacher=teacher,
         student=student_a,
         output_dir=step1_dir,
+        num_samples=num_samples,
+        max_length=max_length,
     )
     run_logit_distillation(cfg1)
 
@@ -43,6 +48,8 @@ def sequential_logits_chain(
         teacher=step1_dir,
         student=student_b,
         output_dir=step2_dir,
+        num_samples=num_samples,
+        max_length=max_length,
     )
     run_logit_distillation(cfg2)
 
@@ -118,6 +125,18 @@ def parse_args() -> argparse.Namespace:
         default=DEFAULT_STUDENT_B,
         help=f"Second student model ID (default: {DEFAULT_STUDENT_B}).",
     )
+    parser.add_argument(
+        "--num-samples",
+        type=int,
+        default=None,
+        help="Optional number of samples to use from the dataset (shared across steps).",
+    )
+    parser.add_argument(
+        "--max-length",
+        type=int,
+        default=4096,
+        help="Maximum sequence length for tokenization and training (shared across steps).",
+    )
 
     return parser.parse_args()
 
@@ -131,6 +150,8 @@ def main():
         teacher=args.teacher,
         student_a=args.student_a,
         student_b=args.student_b,
+        num_samples=args.num_samples,
+        max_length=args.max_length,
     )
 
 
