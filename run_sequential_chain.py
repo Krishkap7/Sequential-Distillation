@@ -12,8 +12,8 @@ from distil_logits_sequential import (
 
 
 DEFAULT_TEACHER = "arcee-ai/Arcee-Spark"
-DEFAULT_STUDENT_A = "Qwen/Qwen3-1.7B"
-DEFAULT_STUDENT_B = "Qwen/Qwen3-0.6B"
+DEFAULT_STUDENT_A = "Qwen/Qwen2-1.5B"
+DEFAULT_STUDENT_B = "Qwen/Qwen2-0.5B"
 
 
 def sequential_logits_chain(
@@ -26,12 +26,12 @@ def sequential_logits_chain(
 ):
     """
     Run the sequential logit-based chain:
-    Arcee-Spark → Qwen3-1.7B → Qwen3-0.6B
+    Arcee-Spark → Qwen2-1.5B → Qwen2-0.5B
     """
     os.makedirs(base_output_dir, exist_ok=True)
 
-    step1_dir = os.path.join(base_output_dir, "qwen3-1_7b_from_arcee_logits")
-    step2_dir = os.path.join(base_output_dir, "qwen3-0_6b_from_qwen3-1_7b_logits")
+    step1_dir = os.path.join(base_output_dir, "qwen2-1_5b_from_arcee_logits")
+    step2_dir = os.path.join(base_output_dir, "qwen2-0_5b_from_qwen2-1_5b_logits")
 
     # Step 1: teacher → student A
     cfg1 = build_logits_config(
@@ -89,7 +89,7 @@ def sequential_logits_chain(
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         description=(
-            "Convenience runner for sequential Arcee-Spark → Qwen3-1.7B → Qwen3-0.6B "
+            "Convenience runner for sequential Arcee-Spark → Qwen2-1.5B → Qwen2-0.5B "
             "distillation chain (logits only; hidden-states disabled)."
         )
     )
