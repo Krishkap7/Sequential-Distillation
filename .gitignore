@@ -51,6 +51,7 @@ checkpoints/
 *.pt
 logs/
 runs/
+**/wandb/
 tf_log/
 output/
 results/

@@ -8,6 +8,15 @@ from datasets import load_dataset
 from trl import SFTTrainer
 from transformers import AutoModelForCausalLM, AutoTokenizer, TrainingArguments
 
+torch.cuda.empty_cache()     # frees *cached* memory
+torch.cuda.synchronize()
+torch.cuda.ipc_collect()
+torch.cuda.reset_peak_memory_stats()
+torch.cuda.reset_accumulated_memory_stats()
+torch.cuda.set_per_process_memory_fraction(0.95, device=0)
+print(torch.cuda.memory_allocated()/1024**2, "MB allocated")
+print(torch.cuda.memory_reserved()/1024**2, "MB reserved")
+
 
 def build_config(
     teacher: str,
@@ -468,6 +477,7 @@ def parse_args() -> argparse.Namespace:
 
 def main():
     args = parse_args()
+    torch.cuda.empty_cache()
 
     use_flash_attention = not args.no_flash_attention
 

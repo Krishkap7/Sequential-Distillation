@@ -22,7 +22,7 @@ def sequential_logits_chain(
     student_a: str = DEFAULT_STUDENT_A,
     student_b: str = DEFAULT_STUDENT_B,
     num_samples: Optional[int] = None,
-    max_length: int = 4096,
+    max_length: int = 1024,
 ):
     """
     Run the sequential logit-based chain:
