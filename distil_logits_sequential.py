@@ -15,10 +15,10 @@ def build_config(
     output_dir: str,
     dataset_name: str = "mlabonne/FineTome-100k",
     dataset_split: str = "train",
-    num_samples: Optional[int] = None,
+    num_samples: Optional[int] = 100000,
     seed: int = 42,
-    max_length: int = 4096,
-    num_train_epochs: int = 3,
+    max_length: int = 512,
+    num_train_epochs: int = 5,
     per_device_train_batch_size: int = 1,
     gradient_accumulation_steps: int = 8,
     save_steps: int = 1000,
@@ -32,7 +32,7 @@ def build_config(
     bf16: bool = True,
     temperature: float = 2.0,
     alpha: float = 0.5,
-    use_flash_attention: bool = True,
+    use_flash_attention: bool = False,
 ) -> Dict[str, Any]:
     """
     Build a config dict compatible with the original distil_logits.py script,
@@ -327,7 +327,7 @@ def parse_args() -> argparse.Namespace:
         "--student",
         type=str,
         required=True,
-        help="HF model ID for the student model (e.g. Qwen/Qwen3-1.5B).",
+        help="HF model ID for the student model (e.g. Qwen/Qwen3-1.7B).",
     )
     parser.add_argument(
         "--output-dir",

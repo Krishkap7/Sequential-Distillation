@@ -1,6 +1,12 @@
-accelerate==1.6.0
+torch
+transformers
 datasets
-safetensors
-transformers==4.51.3
 trl
-hf_transfer
+accelerate
+sentencepiece
+protobuf
+tqdm
+wandb
+safetensors
+bitsandbytes
+packaging

@@ -6,8 +6,8 @@ from distil_hidden_sequential import build_config as build_hidden_config, run_hi
 
 
 DEFAULT_TEACHER = "arcee-ai/Arcee-Spark"
-DEFAULT_STUDENT_A = "Qwen/Qwen3-1.5B"
-DEFAULT_STUDENT_B = "Qwen/Qwen3-0.5B"
+DEFAULT_STUDENT_A = "Qwen/Qwen3-1.7B"
+DEFAULT_STUDENT_B = "Qwen/Qwen3-0.6B"
 
 
 def sequential_logits_chain(
@@ -18,12 +18,12 @@ def sequential_logits_chain(
 ):
     """
     Run the sequential logit-based chain:
-    Arcee-Spark → Qwen3-1.5B → Qwen3-0.5B
+    Arcee-Spark → Qwen3-1.7B → Qwen3-0.6B
     """
     os.makedirs(base_output_dir, exist_ok=True)
 
-    step1_dir = os.path.join(base_output_dir, "qwen3-1_5b_from_arcee_logits")
-    step2_dir = os.path.join(base_output_dir, "qwen3-0_5b_from_qwen3-1_5b_logits")
+    step1_dir = os.path.join(base_output_dir, "qwen3-1_7b_from_arcee_logits")
+    step2_dir = os.path.join(base_output_dir, "qwen3-0_6b_from_qwen3-1_6b_logits")
 
     # Step 1: teacher → student A
     cfg1 = build_logits_config(
@@ -50,12 +50,12 @@ def sequential_hidden_chain(
 ):
     """
     Run the sequential hidden-state-based chain:
-    Arcee-Spark → Qwen3-1.5B → Qwen3-0.5B
+    Arcee-Spark → Qwen3-1.7B → Qwen3-0.6B
     """
     os.makedirs(base_output_dir, exist_ok=True)
 
-    step1_dir = os.path.join(base_output_dir, "qwen3-1_5b_from_arcee_hidden")
-    step2_dir = os.path.join(base_output_dir, "qwen3-0_5b_from_qwen3-1_5b_hidden")
+    step1_dir = os.path.join(base_output_dir, "qwen3-1_7b_from_arcee_hidden")
+    step2_dir = os.path.join(base_output_dir, "qwen3-0_6b_from_qwen3-1_7b_hidden")
 
     # Step 1: teacher → student A
     cfg1 = build_hidden_config(
@@ -77,7 +77,7 @@ def sequential_hidden_chain(
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         description=(
-            "Convenience runner for sequential Arcee-Spark → Qwen3-1.5B → Qwen3-0.5B "
+            "Convenience runner for sequential Arcee-Spark → Qwen3-1.7B → Qwen3-0.6B "
             "distillation chains (logits and hidden-states)."
         )
     )

@@ -10,7 +10,7 @@ from distil_logits_sequential import (
 
 def sanitize_model_id(model_id: str) -> str:
     """
-    Turn a HF model ID like 'Qwen/Qwen3-1.5B' into a filesystem-friendly name.
+    Turn a HF model ID like 'Qwen/Qwen3-1.7B' into a filesystem-friendly name.
     """
     return model_id.replace("/", "_").replace(":", "_")
 
@@ -53,7 +53,7 @@ def parse_args() -> argparse.Namespace:
         type=str,
         nargs="+",
         required=True,
-        help="One or more HF model IDs for student models (e.g. Qwen/Qwen3-1.5B Qwen/Qwen3-0.5B).",
+        help="One or more HF model IDs for student models (e.g. Qwen/Qwen3-1.7B Qwen/Qwen3-0.6B).",
     )
     parser.add_argument(
         "--base-output-dir",
